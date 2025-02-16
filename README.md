@@ -1,11 +1,7 @@
 # Task
 # ROS 2 Project Setup and Commands
 
-This repository contains a ROS 2 project with steps to clone, build, and launch nodes including `turtlesim` and `turtledraw`.
-
----
-
-## Cloning the Repository
+## Execute these commands to start
 
 ```bash
 git clone <repository_url>
@@ -14,39 +10,24 @@ cd <repository_name>
 
 ---
 
-## Building the Workspace
+## After editting your code
 
 ```bash
 colcon build
+source install/setup.bash
+ros2 run turtlesim turtlesim_node
 ```
-
+> **Note:** Make sure to source this every time you open a new terminal or add it to your `.bashrc` for convenience.
 ---
 
-## Sourcing the Setup File
+## On new Terminal
 
 ```bash
 source install/setup.bash
+ros2 run turtlesim_draw turtlesim_draw
 ```
 
 > **Note:** Make sure to source this every time you open a new terminal or add it to your `.bashrc` for convenience.
-
----
-
-## Launching `turtlesim` Node
-
-```bash
-ros2 run turtlesim turtlesim_node
-```
-
----
-
-## Launching `turtledraw` Node
-
-```bash
-ros2 run <your_package_name> turtledraw
-```
-
-Replace `<your_package_name>` with the name of your ROS 2 package that contains the `turtledraw` node.
 
 ---
 

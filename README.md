@@ -4,7 +4,7 @@
 ## Execute these commands to start
 
 ```bash
-git clone git clone <repository_url>
+git clone https://github.com/NambiarAnand/Task-Inductees.git
 cd <repository_name>
 ```
 

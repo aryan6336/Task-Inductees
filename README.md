@@ -5,7 +5,7 @@
 
 ```bash
 git clone https://github.com/NambiarAnand/Task-Inductees.git
-cd <repository_name>
+cd Task-Inductees/task_ws
 ```
 
 ---

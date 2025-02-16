@@ -4,7 +4,7 @@
 ## Execute these commands to start
 
 ```bash
-git clone <repository_url>
+git clone git clone <repository_url>
 cd <repository_name>
 ```
 

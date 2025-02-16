@@ -54,10 +54,6 @@ Replace `<your_package_name>` with the name of your ROS 2 package that contains 
 
 - **ROS 2 Distribution:** Humble Hawksbill
 - **Tested On:** Ubuntu 22.04 LTS
-- **Dependencies:** Ensure all dependencies are installed using `rosdep`:
-  ```bash
-  rosdep install --from-paths src --ignore-src -r -y
-  ```
 
 ---
 

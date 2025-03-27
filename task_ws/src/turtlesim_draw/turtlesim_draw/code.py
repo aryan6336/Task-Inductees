@@ -25,13 +25,23 @@ class TurtleDraw(Node):
         self.pen_client.call_async(req)
 
     def draw_line(self, distance, speed=1.0):
-        msg = Twist()
-        msg.linear.x = speed
-        self.publisher_.publish(msg)
-        time.sleep(distance / speed)
-        msg.linear.x = 0.0
-        self.publisher_.publish(msg)
-        time.sleep(0.5)  # Ensure turtle fully stops
+         msg = Twist()
+         msg.linear.x = speed
+         self.publisher_.publish(msg)
+
+         start_time = self.get_clock().now()  # Get the start time
+         duration = distance / speed  # Time required to travel the distance
+
+         while (self.get_clock().now() - start_time).nanoseconds < int(duration * 1e9):
+             self.publisher_.publish(msg)
+             rclpy.spin_once(self, timeout_sec=0.1)  # Allows ROS2 to handle callbacks
+
+    
+         msg.linear.x = 0.0
+         self.publisher_.publish(msg)
+         time.sleep(0.5)
+
+
 
     def draw_square(self, side_length):
         for _ in range(4):
@@ -42,25 +52,43 @@ class TurtleDraw(Node):
         circumference = 2 * math.pi * radius
         speed = 1.0
         angular_speed = speed / radius
+        duration = circumference / speed  # Add this line to define duration
+
         msg = Twist()
         msg.linear.x = speed
         msg.angular.z = angular_speed
         self.publisher_.publish(msg)
-        time.sleep(circumference / speed)
+        self.get_logger().info(f'Drawing circle with radius {radius}')
+
+        start_time = self.get_clock().now()
+        while (self.get_clock().now() - start_time).nanoseconds < int(duration * 1e9):  # Now 'duration' is defined
+            self.publisher_.publish(msg)
+            rclpy.spin_once(self, timeout_sec=0.1)
+
         msg.linear.x = 0.0
         msg.angular.z = 0.0
         self.publisher_.publish(msg)
         time.sleep(0.5)
 
-    def turn(self, angle):
+
+
+    def turn(self, angle, speed=30):
         msg = Twist()
-        msg.angular.z = math.radians(angle)
-        self.publisher_.publish(msg)
-        time.sleep(abs(angle) / 90.0)  # Approximate turn timing
+        msg.angular.z = math.radians(speed if angle > 0 else -speed)  # Set rotation direction
+    
+        start_time = self.get_clock().now()
+        target_time = abs(angle) / speed  # Time needed to complete the turn
+
+        while (self.get_clock().now() - start_time).nanoseconds < int(target_time * 1e9):
+           self.publisher_.publish(msg)
+           rclpy.spin_once(self, timeout_sec=0.05)  # Small time step for smooth turning
+
+        # Stop rotation smoothly
         msg.angular.z = 0.0
         self.publisher_.publish(msg)
-        time.sleep(0.5)
+        time.sleep(0.2)  # Allow stabilization
 
+ 
     def pen_up(self):
         self.set_pen(off=True)
 
@@ -68,34 +96,40 @@ class TurtleDraw(Node):
         self.set_pen(off=False)
 
     def draw_drone(self):
-        self.draw_circle(0.5)  # Central body
-        positions = [(1, 1), (-1, 1), (-1, -1), (1, -1)]  # Rotor positions
-        for x, y in positions:
-            self.pen_up()
-            self.draw_line(math.sqrt(x**2 + y**2))
-            self.pen_down()
-            self.draw_circle(0.2)
-            self.pen_up()
-            self.draw_line(math.sqrt(x**2 + y**2))
+        self.turn(270)
         self.pen_down()
-
+        self.draw_line(2.82)
+        self.pen_up()
+        self.turn(180)
+        self.draw_line(1)
+        self.turn(90)
+        self.pen_down()
+        self.draw_circle(1)
+        self.pen_up()
+        self.turn(270)
+        self.draw_line(1.82)
+        self.turn(270)
+        
 
 def main(args=None):
     rclpy.init(args=args)
     turtle_draw = TurtleDraw()
-    turtle_draw.pen_down()
-    turtle_draw.draw_square(2.0)
     turtle_draw.pen_up()
-    turtle_draw.turn(90)
+    turtle_draw.draw_line(2)
     turtle_draw.pen_down()
-    turtle_draw.draw_circle(1.0)
+    turtle_draw.turn(135)
+    turtle_draw.draw_square(2.82)
     turtle_draw.pen_up()
-    turtle_draw.draw_line(3.0)
-    turtle_draw.pen_down()
+    turtle_draw.draw_line(1.41)
     turtle_draw.draw_drone()
+    for _ in range(3):
+        turtle_draw.draw_line(1.41)
+        turtle_draw.turn(90)
+        turtle_draw.draw_line(1.41)
+        turtle_draw.draw_drone()
 
     turtle_draw.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
-    main()
+    main() 

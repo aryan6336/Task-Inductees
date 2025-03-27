@@ -24,7 +24,8 @@ ros2 run turtlesim turtlesim_node
 
 ```bash
 source install/setup.bash
-ros2 run turtlesim_draw turtlesim_draw
+cd ~/Task-Inductees/task_ws
+python3 src/turtlesim_draw/turtlesim_draw/code.py
 ```
 
 > **Note:** Make sure to source this every time you open a new terminal or add it to your `.bashrc` for convenience.
